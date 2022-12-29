@@ -13,6 +13,7 @@ import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
 import com.stripe.android.core.AppInfo;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
+import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,7 +64,7 @@ public class StripePlugin extends Plugin {
                     getActivity(),
                     new GooglePayLauncher.Config(metaData.googlePayEnvironment, metaData.countryCode, metaData.displayName),
                     (boolean isReady) -> this.googlePayExecutor.isAvailable = isReady,
-                    (@NotNull GooglePayLauncher.Result result) ->
+                    (@NotNull GooglePayPaymentMethodLauncher.Result result) ->
                         this.googlePayExecutor.onGooglePayResult(bridge, googlePayCallbackId, result)
                 );
         } else {

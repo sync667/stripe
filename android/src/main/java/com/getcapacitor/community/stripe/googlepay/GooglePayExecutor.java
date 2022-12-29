@@ -10,6 +10,8 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.community.stripe.models.Executor;
 import com.google.android.gms.common.util.BiConsumer;
 import com.stripe.android.googlepaylauncher.GooglePayLauncher;
+import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher;
+
 import org.jetbrains.annotations.NotNull;
 
 public class GooglePayExecutor extends Executor {
@@ -61,19 +63,19 @@ public class GooglePayExecutor extends Executor {
         }
     }
 
-    public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayLauncher.Result result) {
+    public void onGooglePayResult(Bridge bridge, String callbackId, @NotNull GooglePayPaymentMethodLauncher.Result result) {
         PluginCall call = bridge.getSavedCall(callbackId);
 
-        if (result instanceof GooglePayLauncher.Result.Completed) {
+        if (result instanceof GooglePayPaymentMethodLauncher.Result.Completed) {
             notifyListenersFunction.accept(GooglePayEvents.Completed.getWebEventName(), emptyObject);
-            call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Completed.getWebEventName()));
-        } else if (result instanceof GooglePayLauncher.Result.Canceled) {
+            call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Completed.getWebEventName()).put("paymentMethod", ((GooglePayPaymentMethodLauncher.Result.Completed) result).getPaymentMethod().id));
+        } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Canceled) {
             notifyListenersFunction.accept(GooglePayEvents.Canceled.getWebEventName(), emptyObject);
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Canceled.getWebEventName()));
-        } else if (result instanceof GooglePayLauncher.Result.Failed) {
+        } else if (result instanceof GooglePayPaymentMethodLauncher.Result.Failed) {
             notifyListenersFunction.accept(
                 GooglePayEvents.Failed.getWebEventName(),
-                new JSObject().put("error", ((GooglePayLauncher.Result.Failed) result).getError().getLocalizedMessage())
+                new JSObject().put("error", ((GooglePayPaymentMethodLauncher.Result.Failed) result).getError().getLocalizedMessage())
             );
             call.resolve(new JSObject().put("paymentResult", GooglePayEvents.Failed.getWebEventName()));
         }
